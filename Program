@@ -1,0 +1,153 @@
+using System;
+
+namespace EmployeeSalarySlip
+{
+    // Base class Employee
+    class Employee
+    {
+        public string Name { get; set; }
+        public int EmpID { get; set; }
+        public double BasicSalary { get; set; }
+        public double TA { get; set; }
+        public double DA { get; set; }
+        public double HRA { get; set; }
+        public double PPF { get; set; }
+
+        public Employee(string name, int empID, double basicSalary)
+        {
+            Name = name;
+            EmpID = empID;
+            BasicSalary = basicSalary;
+            TA = basicSalary * 0.10;   // 10% of Basic Salary
+            DA = basicSalary * 0.15;   // 15% of Basic Salary
+            HRA = basicSalary * 0.20;  // 20% of Basic Salary
+            PPF = basicSalary * 0.12;  // 12% of Basic Salary
+        }
+
+        public virtual double CalculateSalary()
+        {
+            return BasicSalary + TA + DA + HRA + PPF;
+        }
+
+        public virtual void GenerateSalarySlip()
+        {
+            Console.WriteLine("Employee Name: " + Name);
+            Console.WriteLine("Employee ID: " + EmpID);
+            Console.WriteLine("Basic Salary: " + BasicSalary);
+            Console.WriteLine("TA: " + TA);
+            Console.WriteLine("DA: " + DA);
+            Console.WriteLine("HRA: " + HRA);
+            Console.WriteLine("PPF: " + PPF);
+            Console.WriteLine("Total Salary: " + CalculateSalary());
+        }
+    }
+
+    // Derived class Developer
+    class Developer : Employee
+    {
+        public Developer(string name, int empID, double basicSalary)
+            : base(name, empID, basicSalary) { }
+    }
+
+    // Derived class BackOfficer
+    class BackOfficer : Employee
+    {
+        public BackOfficer(string name, int empID, double basicSalary)
+            : base(name, empID, basicSalary) { }
+    }
+
+    // Derived class Tester
+    class Tester : Employee
+    {
+        public double ProjectIncentive { get; set; }
+        public double ReportIncentive { get; set; }
+
+        public Tester(string name, int empID, double basicSalary, double projectIncentive, double reportIncentive)
+            : base(name, empID, basicSalary)
+        {
+            ProjectIncentive = projectIncentive;
+            ReportIncentive = reportIncentive;
+        }
+
+        public override double CalculateSalary()
+        {
+            return base.CalculateSalary() + ProjectIncentive + ReportIncentive;
+        }
+
+        public override void GenerateSalarySlip()
+        {
+            base.GenerateSalarySlip();
+            Console.WriteLine("Project Incentive: " + ProjectIncentive);
+            Console.WriteLine("Report Incentive: " + ReportIncentive);
+            Console.WriteLine("Total Salary: " + CalculateSalary());
+        }
+    }
+
+    // Derived class Marketing
+    class Marketing : Employee
+    {
+        public double Incentive { get; set; }
+
+        public Marketing(string name, int empID, double incentive)
+            : base(name, empID, 0) // Basic salary is 0 for marketing as it's incentive-based
+        {
+            Incentive = incentive;
+        }
+
+        public override double CalculateSalary()
+        {
+            return Incentive;
+        }
+
+        public override void GenerateSalarySlip()
+        {
+            Console.WriteLine("Employee Name: " + Name);
+            Console.WriteLine("Employee ID: " + EmpID);
+            Console.WriteLine("Incentive: " + Incentive);
+            Console.WriteLine("Total Salary: " + CalculateSalary());
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Choose Employee Type:");
+            Console.WriteLine("1. Developer");
+            Console.WriteLine("2. BackOfficer");
+            Console.WriteLine("3. Tester");
+            Console.WriteLine("4. Marketing");
+
+            int choice = Convert.ToInt32(Console.ReadLine());
+
+            switch (choice)
+            {
+                case 1:
+                    Developer dev = new Developer("John Doe", 101, 50000);
+                    dev.GenerateSalarySlip();
+                    break;
+
+                case 2:
+                    BackOfficer backOfficer = new BackOfficer("Jane Doe", 102, 40000);
+                    backOfficer.GenerateSalarySlip();
+                    break;
+
+                case 3:
+                    Tester tester = new Tester("Alice Smith", 103, 45000, 5000, 3000);
+                    tester.GenerateSalarySlip();
+                    break;
+
+                case 4:
+                    Marketing marketing = new Marketing("Bob Johnson", 104, 20000);
+                    marketing.GenerateSalarySlip();
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid choice!");
+                    break;
+            }
+
+            Console.ReadLine();
+        }
+    }
+}
