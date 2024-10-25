@@ -1,0 +1,82 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+
+public class CaptchaForm : Form
+{
+    private PictureBox captchaPictureBox;
+    private TextBox inputTextBox;
+    private Button submitButton;
+    private Label resultLabel;
+    private string correctCaptchaText;
+
+    public CaptchaForm()
+    {
+        // Initialize form elements
+        this.Text = "CAPTCHA Validation";
+        this.Size = new Size(400, 300);
+
+        captchaPictureBox = new PictureBox { Location = new Point(100, 50), Size = new Size(200, 100) };
+        inputTextBox = new TextBox { Location = new Point(100, 170), Width = 200 };
+        submitButton = new Button { Text = "Submit", Location = new Point(150, 210) };
+        resultLabel = new Label { Location = new Point(100, 250), Width = 200 };
+
+        submitButton.Click += SubmitButton_Click;
+
+        this.Controls.Add(captchaPictureBox);
+        this.Controls.Add(inputTextBox);
+        this.Controls.Add(submitButton);
+        this.Controls.Add(resultLabel);
+
+        // Load CAPTCHA from database
+        LoadCaptcha();
+    }
+
+    private void LoadCaptcha()
+    {
+        string connectionString = "your_connection_string"; // replace with your connection string
+        string query = "SELECT TOP 1 CaptchaImage, CaptchaText FROM CaptchaImages ORDER BY NEWID()"; // Random image
+
+        using (SqlConnection conn = new SqlConnection(connectionString))
+        {
+            conn.Open();
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    byte[] imageBytes = (byte[])reader["CaptchaImage"];
+                    correctCaptchaText = reader["CaptchaText"].ToString();
+
+                    using (MemoryStream ms = new MemoryStream(imageBytes))
+                    {
+                        captchaPictureBox.Image = Image.FromStream(ms);
+                    }
+                }
+            }
+        }
+    }
+
+    private void SubmitButton_Click(object sender, EventArgs e)
+    {
+        if (inputTextBox.Text == correctCaptchaText)
+        {
+            resultLabel.Text = "CAPTCHA correct!";
+        }
+        else
+        {
+            resultLabel.Text = "CAPTCHA incorrect. Try again.";
+            LoadCaptcha(); // Load a new CAPTCHA
+        }
+    }
+
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        Application.Run(new CaptchaForm());
+    }
+}
