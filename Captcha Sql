@@ -1,0 +1,5 @@
+CREATE TABLE CaptchaImages (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    CaptchaImage VARBINARY(MAX),
+    CaptchaText NVARCHAR(50)
+);
